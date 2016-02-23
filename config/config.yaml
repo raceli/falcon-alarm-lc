@@ -1,0 +1,64 @@
+# 最大的 level 值，值越大优先级越低
+max_level: 6
+
+# Redis 地址，用来接收 judge 传过来的报警信息
+redis: 'redis://open-falcon:6379/0'
+
+# open-falcon 其他的组件，rpc 调用的
+api:
+  portal: "http://open-falcon:5050"
+  uic: "http://open-falcon:8080"
+
+# sentry 地址，用来接收异常报告。想收集 alarm 本身产生的异常的话可以提供这个，否则留空。
+sentry: 'http://b1d07dfcca704a03b6f0c5de66425305:507f2e20d88b4f818d93532950382f31@docker14:8080/7'
+
+
+# 报警策略
+# level 代表处理的优先级
+# provider 对应着发送的逻辑，在代码中能看到
+# 剩下的参数是提供给 provider 用的
+strategy:
+  - name: phonecall
+    provider: nexmo_tts
+    level: '0'
+    api_key: 123123123
+    api_secret: 123123123
+    voice: female
+    lg: zh-cn
+    repeat: 3
+    prefix: ''
+
+  - name: sms
+    provider: yunpian_sms
+    # 1 for ops-phone
+    # 2 for individuals' phones
+    level: '012'
+    signature: 'LC报警'
+    api_key: 123123123
+
+  # - name: pagerduty
+  #   provider: pagerduty
+  #   level: '0123'
+
+  - name: onealert
+    provider: onealert
+    level: '0123'
+
+  - name: mail
+    provider: smtp
+    # omit 0123 since pagerduty has email noti
+    level: '4'
+    server: 123123123
+    send_from: 123123123
+    username: 123123123
+    password: 123123123
+
+  - name: bearychat
+    provider: bearychat
+    level: '012345'
+
+  - name: indicator
+    # do nothing, just consume the queue.
+    # indicator will poll api
+    provider: noop
+    level: '0123456'
